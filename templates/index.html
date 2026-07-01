@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Sade To-Do</title>
+</head>
+<body>
+    <h1>To-Do Listem</h1>
+    
+    <!-- Yeni todo ekleme formu -->
+    <input type="text" id="todoInput" placeholder="Yeni görev...">
+    <button onclick="addTodo()">Ekle</button>
+    
+    <!-- Todo listesi -->
+    <ul id="todoList"></ul>
+
+    <script>
+        // Backend API adresi
+        const API_URL = "/todos/";
+
+        // Todoları getir ve listele
+        async function fetchTodos() {
+            const response = await fetch(API_URL);
+            const todos = await response.json();
+            const list = document.getElementById('todoList');
+            list.innerHTML = ''; // Listeyi temizle
+            
+            todos.forEach(todo => {
+                const li = document.createElement('li');
+                // Tamamlananları üstü çizili yap
+                li.style.textDecoration = todo.is_completed ? 'line-through' : 'none';
+                li.innerHTML = `
+                    <span onclick="toggleTodo(${todo.id})">${todo.text}</span>
+                    <button onclick="deleteTodo(${todo.id})">Sil</button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        // Yeni todo ekle
+        async function addTodo() {
+            const text = document.getElementById('todoInput').value;
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({text: text})
+            });
+            document.getElementById('todoInput').value = '';
+            fetchTodos();
+        }
+
+        // Todo durumunu değiştir
+        async function toggleTodo(id) {
+            await fetch(`${API_URL}${id}/toggle`, { method: 'PUT' });
+            fetchTodos();
+        }
+
+        // Todo sil
+        async function deleteTodo(id) {
+            await fetch(`${API_URL}${id}`, { method: 'DELETE' });
+            fetchTodos();
+        }
+
+        // Sayfa yüklendiğinde todoları getir
+        fetchTodos();
+    </script>
+</body>
+</html>
