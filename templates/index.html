@@ -9,6 +9,7 @@
     
     <!-- Yeni todo ekleme formu -->
     <input type="text" id="todoInput" placeholder="Yeni görev...">
+    <input type="date" id="deadlineInput">
     <button onclick="addTodo()">Ekle</button>
     
     <!-- Todo listesi -->
@@ -29,8 +30,12 @@
                 const li = document.createElement('li');
                 // Tamamlananları üstü çizili yap
                 li.style.textDecoration = todo.is_completed ? 'line-through' : 'none';
+                
+                // Deadline varsa göster
+                const deadlineText = todo.deadline ? ` (Deadline: ${todo.deadline})` : '';
+                
                 li.innerHTML = `
-                    <span onclick="toggleTodo(${todo.id})">${todo.text}</span>
+                    <span onclick="toggleTodo(${todo.id})">${todo.text}${deadlineText}</span>
                     <button onclick="deleteTodo(${todo.id})">Sil</button>
                 `;
                 list.appendChild(li);
@@ -40,12 +45,14 @@
         // Yeni todo ekle
         async function addTodo() {
             const text = document.getElementById('todoInput').value;
+            const deadline = document.getElementById('deadlineInput').value;
             await fetch(API_URL, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({text: text})
+                body: JSON.stringify({text: text, deadline: deadline})
             });
             document.getElementById('todoInput').value = '';
+            document.getElementById('deadlineInput').value = '';
             fetchTodos();
         }
 

@@ -8,3 +8,4 @@ class Todo(Base):
     id = Column(Integer, primary_key=True, index=True)
     text = Column(String, index=True)
     is_completed = Column(Boolean, default=False) # Varsayılan: Tamamlanmadı
+    deadline = Column(String, nullable=True) # Deadline alanı

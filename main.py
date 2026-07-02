@@ -31,7 +31,11 @@ def read_todos(db: Session = Depends(get_db)):
 # Yeni todo oluştur (API)
 @app.post("/todos/")
 def create_todo(todo_data: dict, db: Session = Depends(get_db)):
-    new_todo = Todo(text=todo_data["text"])
+    # Deadline verisini alıyoruz (gelmezse None olacak)
+    new_todo = Todo(
+        text=todo_data["text"],
+        deadline=todo_data.get("deadline") 
+    )
     db.add(new_todo)
     db.commit()
     db.refresh(new_todo)
