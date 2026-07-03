@@ -13,3 +13,11 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # Temel model sınıfı
 Base = declarative_base()
+
+# Veritabanı oturumu için bağımlılık
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
